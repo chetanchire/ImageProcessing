@@ -51,6 +51,8 @@ def showRoiBoundary(Image, Mask, eqHist=1):
         ax.contour(Mask, colors='red', linewidths=1)
         ax.set_title(f'{getVarName(Mask)} over {getVarName(Image)}')
         return fig.tight_layout
+        # savefig = plt.gcf()
+        # return savefig
     else:
         raise SystemExit('Images dont match required data type. First argument is uint8 image and second argument is a binary image')
 
