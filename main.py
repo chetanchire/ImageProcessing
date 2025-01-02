@@ -1,7 +1,7 @@
 import tkinter, glob
 from tkinter import filedialog, END
 from matplotlib import pyplot as plt
-from skimage import io, measure
+from skimage import io, measure, filters, morphology
 import numpy as np
 import os
 import pandas as pd
@@ -48,6 +48,10 @@ def process_images(run_dir):
     corr_img_profile = helpers.showImgProfile(corr_signal, eqHist = 2)
     plt.savefig(corr_img_profile_save_path + os.path.basename(file) + '.png')
     # io.imsave(corr_img_profile_save_path + os.path.basename(file), corr_img_profile)
+
+    corr_signal = filters.median(corr_signal, footprint = morphology.disk(7))
+    sig_img_save_path = corr_img_profile_save_path + 'baseline_corrected' + os.path.basename(file)
+    io.imsave(sig_img_save_path, corr_signal.astype(np.uint16))
 
     thresh_signal = corr_signal > helpers.threshold_mad(corr_signal)
     sig_roi = helpers.showRoiBoundary(corr_signal, thresh_signal)
