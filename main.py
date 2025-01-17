@@ -1,15 +1,13 @@
-import tkinter, glob
+import tkinter, glob, os, datetime
 from tkinter import filedialog, END
-from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 from skimage import io, measure, filters, morphology
 import numpy as np
-import os
 import pandas as pd
-import datetime
 
 import helpers
-
-plt.ioff()
 
 def process_images(run_dir):
   sig_imgs = []
@@ -29,23 +27,23 @@ def process_images(run_dir):
   csv_filepath = run_dir + '\\Region_Properties'+ datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.csv'
   
   tif_files = glob.glob(sig_img_path)
-  plt.ioff()
+  
   if os.path.isdir(run_dir + '\\improc\\chetan') == False:
     os.mkdir(run_dir + '\\improc\\chetan')
   
   for file in tif_files:
     signal = io.imread(file, plugin = 'pil')
-    
     signal = helpers.denoiseImage(signal)
     membrane, memCoverage = helpers.find_membrane(signal)
     mem_roi = helpers.showRoiBoundary(signal, membrane)
+    plt.show(block = False)
     # io.imsave(roi_save_path + os.path.basename(file) + '.png', mem_roi)
     plt.savefig(roi_save_path + os.path.basename(file) + '1.png') # This works if showRoiBoundary() returns fig.tight_layout
     # mem_roi.savefig(roi_save_path + os.path.basename(file) + '.png') # This works if showRoiBoundary() returns plt.gcf()
-    # plt.imsave(roi_save_path + os.path.basename(file), mem_roi)
 
     corr_signal = helpers.baseline_corrected_img(signal, membrane, method = 1)
     corr_img_profile = helpers.showImgProfile(corr_signal, eqHist = 2)
+    plt.show(block = False)
     plt.savefig(corr_img_profile_save_path + os.path.basename(file) + '.png')
     # io.imsave(corr_img_profile_save_path + os.path.basename(file), corr_img_profile)
 
@@ -55,6 +53,7 @@ def process_images(run_dir):
 
     thresh_signal = corr_signal > helpers.threshold_mad(corr_signal)
     sig_roi = helpers.showRoiBoundary(corr_signal, thresh_signal)
+    plt.show(block = False)
     plt.savefig(roi_save_path + os.path.basename(file) + '2.png')
 
     labelled_signal, numRegs = measure.label(thresh_signal, return_num = True)

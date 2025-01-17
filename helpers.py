@@ -35,7 +35,7 @@ def showImgHist(Image, log=1, eqHist=1, cMap = 'gray'):
     axs[1].hist(Image.ravel(), bins = 256, log = log)
     return fig.tight_layout
 
-def showRoiBoundary(Image, Mask, eqHist=1):
+def showRoiBoundary(Image, Mask, eqHist=1, file_ = ""):
     if eqHist == 1:
         Image_eq = exposure.equalize_hist(Image) 
     elif eqHist == 2:
@@ -49,8 +49,12 @@ def showRoiBoundary(Image, Mask, eqHist=1):
         # for contour in contours:
             # ax.plot(contour[:, 1], contour[:, 0], linewidth=2)
         ax.contour(Mask, colors='red', linewidths=1)
-        ax.set_title(f'{getVarName(Mask)} over {getVarName(Image)}')
-        return fig.tight_layout
+        if file_ == "":
+            ax.set_title(f'{getVarName(Mask)} over {getVarName(Image)}')
+        else:
+            title_ = str(os.path.splitext(os.path.basename(file_))[0])
+            ax.set_title(title_)
+        return fig.tight_layout()
         # savefig = plt.gcf()
         # return savefig
     else:
@@ -130,7 +134,7 @@ def showImgProfile(Image, yLine = None, orient = 0, lw = 1, eqHist = 1, ymin = N
     axs[1].set_box_aspect(0.6)
     axs[1].axis(ymin=ymin,ymax=ymax)
     #axs[1].axvline(x=420, color='r')
-    return fig.tight_layout
+    return fig.tight_layout()
 
 def rmCoeffLvl (coe, lvlrm, rmApprox = 0):
     if type(lvlrm) == list:
