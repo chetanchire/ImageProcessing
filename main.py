@@ -7,9 +7,9 @@ from skimage import io, measure, filters, morphology
 import numpy as np
 import pandas as pd
 
-import helpers
+import helpers, process_images
 
-def process_images(run_dir):
+def main_process_images(run_dir):
   sig_imgs = []
   sig_imgs_names = []
   analysis_log = pd.DataFrame()
@@ -32,6 +32,13 @@ def process_images(run_dir):
     os.mkdir(run_dir + '\\improc\\chetan')
   
   for file in tif_files:
+
+    cropped_sig, baseline, corrected_sig = process_images.correct_image(file)
+
+    level, missing_peaks, found_contours = process_images.band_finder(corrected_sig, min_dist = 100)
+
+    mask = process_images.plot_mask(corrected_sig, found_contours)
+
     signal = io.imread(file, plugin = 'pil')
     signal = helpers.denoiseImage(signal)
     membrane, memCoverage = helpers.find_membrane(signal)
@@ -98,7 +105,7 @@ sfbtn = tkinter.Button(root, width=2, text="...",
                        command= lambda:select_dir(Img_dir))
 sfbtn.place(x=400, y=10)
 
-tkinter.Button(text='Process Images', command=lambda: process_images(Img_dir.get())).place(x= 200, y=50)
+tkinter.Button(text='Process Images', command=lambda: main_process_images(Img_dir.get())).place(x= 200, y=50)
 '''
 Widgets are added here
 '''

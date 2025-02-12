@@ -27,7 +27,7 @@ def filter_bubbles(image):
         image = np.copy(image_filled.astype(np.uint16))
     return image
 
-def process_images(file, lam=(1e6, 1e6)):
+def correct_image(file, lam=(1e6, 1e6)):
     signal = io.imread(file, plugin = 'pil')
     membrane, memCoverage = helpers.find_membrane(signal)
     cropped_sig = signal[np.where(membrane)[0].min():np.where(membrane)[0].max(), 
